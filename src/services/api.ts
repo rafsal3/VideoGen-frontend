@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'http://192.168.20.3:8000';
 
 export interface RegisterData {
   username: string;
@@ -158,6 +158,15 @@ class ApiService {
       },
     });
   }
+
+  async getSavedTemplates(token: string): Promise<Template[]> {
+  return this.request<Template[]>('/templates/saved/my-templates', {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+}
+
 }
 
 

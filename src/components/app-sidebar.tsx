@@ -1,4 +1,5 @@
-import { Link, useLocation } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -11,8 +12,10 @@ import {
   SidebarFooter,
   SidebarHeader,
   useSidebar,
-} from "@/components/ui/sidebar"
-import { LayoutDashboard, FolderOpen, Rocket, Compass, Settings, User } from "lucide-react"
+} from "@/components/ui/sidebar";
+import { LayoutDashboard, FolderOpen, Rocket, Compass, Settings, User, Bookmark } from "lucide-react";
+import { apiService, Template } from "@/services/api";
+import { useAuth } from "@/contexts/AuthContext"; // ✅ use the token from context
 
 const menuItems = [
   {
@@ -35,7 +38,7 @@ const menuItems = [
     icon: FolderOpen,
     to: "/dashboard/folder",
   },
-]
+];
 
 const bottomItems = [
   {
@@ -48,11 +51,33 @@ const bottomItems = [
     icon: User,
     to: "/dashboard/account",
   },
-]
+];
 
 export function AppSidebar() {
-  const location = useLocation()
-  const { state } = useSidebar()
+  const location = useLocation();
+  const { state } = useSidebar();
+  const { token } = useAuth(); // ✅ Correct token source
+  const [savedTemplates, setSavedTemplates] = useState<Template[]>([]);
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      if (!token) {
+        console.warn("No token found for fetching saved templates.");
+        return;
+      }
+
+      try {
+        console.log("Fetching saved templates with token:", token);
+        const templates = await apiService.getSavedTemplates(token);
+        console.log("Saved templates fetched:", templates);
+        setSavedTemplates(templates);
+      } catch (error) {
+        console.error("Failed to load saved templates:", error);
+      }
+    };
+
+    fetchTemplates();
+  }, [token]);
 
   return (
     <Sidebar collapsible="icon" variant="inset" className="border-r">
@@ -64,7 +89,9 @@ export function AppSidebar() {
               style={{ boxShadow: "0 0 0 2px #fff" }}
             />
             {state === "expanded" && (
-              <span className="font-bold text-lg tracking-tight text-gray-900">AutoVideoGen</span>
+              <span className="font-bold text-lg tracking-tight text-gray-900">
+                AutoVideoGen
+              </span>
             )}
           </div>
         </div>
@@ -88,6 +115,29 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {savedTemplates.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Saved Templates</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {savedTemplates.map((template) => (
+                  <SidebarMenuItem key={template.template_id}>
+                    <SidebarMenuButton asChild>
+                      <Link
+                        to={`/dashboard/template/${template.template_id}`} // customize this route if needed
+                        className="flex items-center gap-3"
+                      >
+                        <Bookmark size={18} />
+                        <span>{template.name}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter>
@@ -105,7 +155,7 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
 
-export default AppSidebar
+export default AppSidebar;

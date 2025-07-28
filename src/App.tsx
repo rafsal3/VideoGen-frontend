@@ -8,6 +8,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import Explore from "./pages/Explore";
 import Account from "./pages/Account";
 import TemplateDetail from "./pages/TemplateDetail";
+import NewProject from "./pages/NewProject";
 
 function App() {
   return (
@@ -32,6 +33,8 @@ function App() {
 
           {/* 👇 Nested route inside /dashboard/ */}
           <Route path="template/:templateId" element={<TemplateDetail />} />
+          <Route path="template/:templateId/use" element={<NewProject />} />
+
 
           {/* Fallback route inside dashboard */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

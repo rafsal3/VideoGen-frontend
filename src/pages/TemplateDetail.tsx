@@ -59,6 +59,13 @@ const TemplateDetail: React.FC = () => {
             <span className="bg-gray-100 px-2 py-0.5 rounded-full">Resolution: {template.resolution}</span>
           </div>
         </div>
+        <button
+        onClick={() => navigate(`/dashboard/template/${template.template_id}/use`)}
+        className="mt-4 inline-flex items-center gap-2 px-4 py-2 bg-black text-white rounded-full hover:bg-gray-800 transition"
+        >
+        Use This Template
+        </button>
+
         <div className="flex items-center gap-2 mt-2 sm:mt-0">
           <Bookmark
             size={20}

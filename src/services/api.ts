@@ -69,6 +69,8 @@ export interface Project {
     };
   }
 
+  
+
 class ApiService {
   private baseUrl: string;
 
@@ -193,12 +195,60 @@ class ApiService {
   });
 }
 
+// Fix for the createProject method in your api.ts file
+async createProject(
+  token: string,
+  data: {
+    template_id: string;
+    name: string;
+    description: string;
+    parameters: Record<string, any>;
+    render_quality: string;
+  }
+): Promise<{ message: string; project_id: string; _id: string }> {
+  return this.request<{ message: string; project_id: string; _id: string }>('/projects/', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+}
+
+  async getProjectById(token: string, projectId: string): Promise<Project> {
+  return this.request<Project>(`/projects/${projectId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
 
 
 
 
 }
+  async renderProject(token: string, projectId: string): Promise<{ message: string; project_id: string; status: string }> {
+  return this.request<{ message: string; project_id: string; status: string }>(
+    `/projects/${projectId}/render`,
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    }
+  );
+}
+
+async deleteProject(token: string, projectId: string): Promise<{ message: string }> {
+  return this.request<{ message: string }>(`/projects/${projectId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+}
 
 
 
+}
 export const apiService = new ApiService(); 

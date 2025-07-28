@@ -1,4 +1,4 @@
-const BASE_URL = 'http://192.168.20.3:8000';
+const BASE_URL = 'http://localhost:8000';
 
 export interface RegisterData {
   username: string;
@@ -166,6 +166,36 @@ class ApiService {
     },
   });
 }
+
+  async saveTemplate(token: string, templateId: string): Promise<{ message: string }> {
+  return this.request<{ message: string }>(`/templates/${templateId}/save`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+}
+
+  async unsaveTemplate(token: string, templateId: string): Promise<{ message: string }> {
+    return this.request<{ message: string }>(`/templates/${templateId}/unsave`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+  }
+
+  async getTemplateById(token: string, templateId: string): Promise<Template> {
+  return this.request<Template>(`/templates/${templateId}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+}
+
+
+
+
 
 }
 

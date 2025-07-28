@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   Sidebar,
   SidebarContent,
@@ -13,71 +13,44 @@ import {
   SidebarHeader,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { LayoutDashboard, FolderOpen, Rocket, Compass, Settings, User, Bookmark } from "lucide-react";
-import { apiService, Template } from "@/services/api";
-import { useAuth } from "@/contexts/AuthContext"; // ✅ use the token from context
+import {
+  LayoutDashboard,
+  FolderOpen,
+  Rocket,
+  Compass,
+  Settings,
+  User,
+  Bookmark,
+} from "lucide-react";
+import { apiService } from "@/services/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 const menuItems = [
-  {
-    label: "Recent Projects",
-    icon: LayoutDashboard,
-    to: "/dashboard",
-  },
-  {
-    label: "Explore",
-    icon: Compass,
-    to: "/dashboard/explore",
-  },
-  {
-    label: "Rendering",
-    icon: Rocket,
-    to: "/dashboard/rendering",
-  },
-  {
-    label: "My Folder",
-    icon: FolderOpen,
-    to: "/dashboard/folder",
-  },
+  { label: "Recent Projects", icon: LayoutDashboard, to: "/dashboard" },
+  { label: "Explore", icon: Compass, to: "/dashboard/explore" },
+  { label: "Rendering", icon: Rocket, to: "/dashboard/rendering" },
+  { label: "My Folder", icon: FolderOpen, to: "/dashboard/folder" },
 ];
 
 const bottomItems = [
-  {
-    label: "Settings",
-    icon: Settings,
-    to: "/dashboard/settings",
-  },
-  {
-    label: "Account",
-    icon: User,
-    to: "/dashboard/account",
-  },
+  { label: "Settings", icon: Settings, to: "/dashboard/settings" },
+  { label: "Account", icon: User, to: "/dashboard/account" },
 ];
 
 export function AppSidebar() {
   const location = useLocation();
   const { state } = useSidebar();
-  const { token } = useAuth(); // ✅ Correct token source
-  const [savedTemplates, setSavedTemplates] = useState<Template[]>([]);
+  const { token } = useAuth();
 
-  useEffect(() => {
-    const fetchTemplates = async () => {
-      if (!token) {
-        console.warn("No token found for fetching saved templates.");
-        return;
-      }
-
-      try {
-        console.log("Fetching saved templates with token:", token);
-        const templates = await apiService.getSavedTemplates(token);
-        console.log("Saved templates fetched:", templates);
-        setSavedTemplates(templates);
-      } catch (error) {
-        console.error("Failed to load saved templates:", error);
-      }
-    };
-
-    fetchTemplates();
-  }, [token]);
+  const { data: savedTemplates = [], isLoading } = useQuery({
+    queryKey: ["savedTemplates"],
+    queryFn: () => {
+      if (!token) throw new Error("No token for saved templates");
+      return apiService.getSavedTemplates(token);
+    },
+    enabled: !!token,
+    staleTime: 1000 * 60 * 5, // cache for 5 minutes
+  });
 
   return (
     <Sidebar collapsible="icon" variant="inset" className="border-r">
@@ -125,7 +98,7 @@ export function AppSidebar() {
                   <SidebarMenuItem key={template.template_id}>
                     <SidebarMenuButton asChild>
                       <Link
-                        to={`/dashboard/template/${template.template_id}`} // customize this route if needed
+                        to={`/dashboard/template/${template.template_id}`}
                         className="flex items-center gap-3"
                       >
                         <Bookmark size={18} />

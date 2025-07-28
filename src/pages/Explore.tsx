@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { apiService, Template } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Bookmark, Eye } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 
-const staticCategories = [
-  'All',
-];
+const staticCategories = ['All'];
 
 const bgColors = [
   'bg-gradient-to-br from-pink-300 via-purple-200 to-blue-200',
@@ -20,6 +20,7 @@ const bgColors = [
 
 const Explore: React.FC = () => {
   const { token } = useAuth();
+  const queryClient = useQueryClient();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -27,7 +28,6 @@ const Explore: React.FC = () => {
   const [showAllCategories, setShowAllCategories] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('All');
 
-  // Fetch categories on mount
   useEffect(() => {
     const fetchCategories = async () => {
       if (!token) return;
@@ -41,20 +41,18 @@ const Explore: React.FC = () => {
     fetchCategories();
   }, [token]);
 
-  // Fetch templates when selectedCategory changes
   useEffect(() => {
     const fetchTemplates = async () => {
       if (!token) return;
       setLoading(true);
       try {
-        let data: Template[] = [];
-        if (selectedCategory === 'All') {
-          data = await apiService.getTemplates(token);
-        } else {
-          data = await apiService.getTemplatesByCategory(token, selectedCategory);
-        }
+        const data =
+          selectedCategory === 'All'
+            ? await apiService.getTemplates(token)
+            : await apiService.getTemplatesByCategory(token, selectedCategory);
         setTemplates(data);
       } catch (e) {
+        console.error(e);
         setTemplates([]);
       } finally {
         setLoading(false);
@@ -63,18 +61,50 @@ const Explore: React.FC = () => {
     fetchTemplates();
   }, [token, selectedCategory]);
 
-  const filteredTemplates = templates.filter((t) =>
-    t.name.toLowerCase().includes(search.toLowerCase()) || t.description.toLowerCase().includes(search.toLowerCase())
+  const toggleSave = async (e: React.MouseEvent, template: Template) => {
+    e.stopPropagation(); // ✅ Prevent click from propagating to <Link>
+    e.preventDefault();
+    if (!token) return;
+    try {
+      if (template.is_saved) {
+        const res = await apiService.unsaveTemplate(token, template.template_id);
+        console.log(res.message);
+        setTemplates(prev =>
+          prev.map(t =>
+            t.template_id === template.template_id
+              ? { ...t, is_saved: false, total_saves: t.total_saves - 1 }
+              : t
+          )
+        );
+      } else {
+        const res = await apiService.saveTemplate(token, template.template_id);
+        console.log(res.message);
+        setTemplates(prev =>
+          prev.map(t =>
+            t.template_id === template.template_id
+              ? { ...t, is_saved: true, total_saves: t.total_saves + 1 }
+              : t
+          )
+        );
+      }
+
+      queryClient.invalidateQueries({ queryKey: ['savedTemplates'] });
+
+    } catch (e) {
+      console.error('Failed to toggle save:', e);
+    }
+  };
+
+  const filteredTemplates = templates.filter(t =>
+    t.name.toLowerCase().includes(search.toLowerCase()) ||
+    t.description.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Category display logic
   let displayCategories = categories;
   let showSeeAll = false;
   if (categories.length > 7 && !showAllCategories) {
-    displayCategories = categories.slice(0, 7); // 1 for 'All', 6 more
+    displayCategories = categories.slice(0, 7);
     showSeeAll = true;
-  } else if (showAllCategories) {
-    displayCategories = categories;
   }
 
   return (
@@ -89,11 +119,11 @@ const Explore: React.FC = () => {
           onChange={e => setSearch(e.target.value)}
         />
         <div className="flex flex-wrap gap-2 justify-center">
-          {displayCategories.map((cat) => (
+          {displayCategories.map(cat => (
             <button
               key={cat}
               className={`px-4 py-1 rounded-full border text-sm font-medium transition-colors ${selectedCategory === cat ? 'bg-black text-white' : 'bg-gray-100 text-gray-800'}`}
-              onClick={() => { setSelectedCategory(cat); }}
+              onClick={() => setSelectedCategory(cat)}
             >
               {cat}
             </button>
@@ -101,7 +131,7 @@ const Explore: React.FC = () => {
           {showSeeAll && (
             <button
               key="See All +"
-              className={`px-4 py-1 rounded-full border text-sm font-medium transition-colors bg-gray-100 text-gray-800`}
+              className="px-4 py-1 rounded-full border text-sm font-medium transition-colors bg-gray-100 text-gray-800"
               onClick={() => setShowAllCategories(true)}
             >
               See All +
@@ -109,17 +139,18 @@ const Explore: React.FC = () => {
           )}
         </div>
       </div>
+
       {/* Templates Grid */}
       {loading ? (
         <div className="text-center text-gray-500">Loading templates...</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredTemplates.map((template, idx) => (
-            <div
+            <Link
+              to={`/dashboard/template/${template.template_id}`}
               key={template.template_id}
-              className={`rounded-2xl p-0 shadow-md flex flex-col relative overflow-hidden`}
+              className="rounded-2xl p-0 shadow-md flex flex-col relative overflow-hidden hover:shadow-lg transition"
             >
-              {/* Thumbnail or fallback gradient */}
               {template.thumbnail_url ? (
                 <div className="h-40 w-full relative flex items-center justify-center overflow-hidden">
                   <img
@@ -127,15 +158,31 @@ const Explore: React.FC = () => {
                     alt={template.name}
                     className="object-cover w-full h-full"
                   />
-                  <button className="absolute top-3 right-3 bg-white/80 rounded-full p-1">
-                    <Bookmark size={20} className={template.is_saved ? 'fill-black' : 'stroke-black'} />
+                  <button
+                    className="absolute top-3 right-3 bg-white/80 rounded-full p-1"
+                    onClick={(e) => toggleSave(e, template)}
+                    title={template.is_saved ? 'Unsave' : 'Save'}
+                    aria-label="Toggle save"
+                  >
+                    <Bookmark
+                      size={20}
+                      className={template.is_saved ? 'fill-black stroke-black' : 'stroke-black'}
+                    />
                   </button>
                 </div>
               ) : (
-                <div className={`h-40 flex items-center justify-center text-3xl font-bold select-none ${bgColors[idx % bgColors.length]} text-white relative`}> 
+                <div className={`h-40 flex items-center justify-center text-3xl font-bold select-none ${bgColors[idx % bgColors.length]} text-white relative`}>
                   <span>{template.name}</span>
-                  <button className="absolute top-3 right-3 bg-white/80 rounded-full p-1">
-                    <Bookmark size={20} className={template.is_saved ? 'fill-black' : 'stroke-black'} />
+                  <button
+                    className="absolute top-3 right-3 bg-white/80 rounded-full p-1"
+                    onClick={(e) => toggleSave(e, template)}
+                    title={template.is_saved ? 'Unsave' : 'Save'}
+                    aria-label="Toggle save"
+                  >
+                    <Bookmark
+                      size={20}
+                      className={template.is_saved ? 'fill-black stroke-black' : 'stroke-black'}
+                    />
                   </button>
                 </div>
               )}
@@ -146,7 +193,7 @@ const Explore: React.FC = () => {
                 </div>
                 <div className="text-gray-500 text-sm mb-2">{template.description}</div>
                 <div className="flex flex-wrap gap-1 mb-2">
-                  {template.tags && template.tags.map(tag => (
+                  {template.tags?.map(tag => (
                     <span key={tag} className="bg-gray-100 text-xs px-2 py-0.5 rounded-full text-gray-700">{tag}</span>
                   ))}
                 </div>
@@ -154,7 +201,7 @@ const Explore: React.FC = () => {
                   <span>Category: {template.category}</span> &middot; <span>Duration: {template.duration_seconds}s</span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
@@ -162,4 +209,4 @@ const Explore: React.FC = () => {
   );
 };
 
-export default Explore; 
+export default Explore;

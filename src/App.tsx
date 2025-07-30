@@ -11,6 +11,7 @@ import TemplateDetail from "./pages/TemplateDetail";
 import NewProject from "./pages/NewProject";
 import ExportPage from "./pages/ExportPage";
 
+
 function App() {
   return (
     <AuthProvider>

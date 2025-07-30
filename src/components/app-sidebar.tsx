@@ -18,12 +18,11 @@ import {
   FolderOpen,
   Rocket,
   Compass,
-  Settings,
-  User,
   Bookmark,
 } from "lucide-react";
 import { apiService } from "@/services/api";
 import { useAuth } from "@/contexts/AuthContext";
+import { NavUser } from "@/components/nav-user";
 
 const menuItems = [
   { label: "Recent Projects", icon: LayoutDashboard, to: "/dashboard" },
@@ -32,24 +31,29 @@ const menuItems = [
   { label: "My Folder", icon: FolderOpen, to: "/dashboard/folder" },
 ];
 
-const bottomItems = [
-  { label: "Settings", icon: Settings, to: "/dashboard/settings" },
-  { label: "Account", icon: User, to: "/dashboard/account" },
-];
-
 export function AppSidebar() {
   const location = useLocation();
   const { state } = useSidebar();
   const { token } = useAuth();
 
-  const { data: savedTemplates = [], isLoading } = useQuery({
+  const { data: savedTemplates = [] } = useQuery({
     queryKey: ["savedTemplates"],
     queryFn: () => {
       if (!token) throw new Error("No token for saved templates");
       return apiService.getSavedTemplates(token);
     },
     enabled: !!token,
-    staleTime: 1000 * 60 * 5, // cache for 5 minutes
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const { data: user } = useQuery({
+    queryKey: ["currentUser"],
+    queryFn: () => {
+      if (!token) throw new Error("No token for current user");
+      return apiService.getCurrentUser(token);
+    },
+    enabled: !!token,
+    staleTime: 1000 * 60 * 5,
   });
 
   return (
@@ -114,18 +118,15 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter>
-        <SidebarMenu>
-          {bottomItems.map((item) => (
-            <SidebarMenuItem key={item.label}>
-              <SidebarMenuButton asChild isActive={location.pathname === item.to}>
-                <Link to={item.to} className="flex items-center gap-3">
-                  <item.icon size={18} />
-                  <span>{item.label}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
-        </SidebarMenu>
+        {user && (
+          <NavUser
+            user={{
+              name: user.full_name,
+              email: user.email,
+              avatar: `https://api.dicebear.com/7.x/initials/svg?seed=${user.full_name}`,
+            }}
+          />
+        )}
       </SidebarFooter>
     </Sidebar>
   );

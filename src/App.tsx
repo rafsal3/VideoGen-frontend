@@ -9,6 +9,7 @@ import Explore from "./pages/Explore";
 import Account from "./pages/Account";
 import TemplateDetail from "./pages/TemplateDetail";
 import NewProject from "./pages/NewProject";
+import ExportPage from "./pages/ExportPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         >
           <Route index element={<Home />} />
           <Route path="explore" element={<Explore />} />
+          <Route path="export" element={<ExportPage />} />
           <Route path="account" element={<Account />} />
 
           {/* 👇 Nested route inside /dashboard/ */}

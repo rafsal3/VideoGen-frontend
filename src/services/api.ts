@@ -1,4 +1,6 @@
 const BASE_URL = 'http://localhost:8000';
+type ParameterValue = string | number | boolean | string[] | number[];
+
 
 export interface RegisterData {
   username: string;
@@ -29,7 +31,7 @@ export interface Template {
   name: string;
   description: string;
   category: string;
-  parameters_schema: Record<string, any>;
+  parameters_schema: Record<string, ParameterValue>;
   preview_url: string;
   thumbnail_url: string;
   duration_seconds: number;
@@ -50,7 +52,7 @@ export interface Project {
     template_id: string;
     name: string;
     description: string;
-    parameters: Record<string, any>;
+    parameters: Record<string, ParameterValue>;
     status: string;
     render_quality: string;
     video_url: string;
@@ -202,7 +204,7 @@ async createProject(
     template_id: string;
     name: string;
     description: string;
-    parameters: Record<string, any>;
+    parameters: Record<string, unknown>;
     render_quality: string;
   }
 ): Promise<{ message: string; project_id: string; _id: string }> {
@@ -252,3 +254,4 @@ async deleteProject(token: string, projectId: string): Promise<{ message: string
 
 }
 export const apiService = new ApiService(); 
+

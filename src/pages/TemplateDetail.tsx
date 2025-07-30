@@ -10,7 +10,7 @@ const TemplateDetail: React.FC = () => {
   const navigate = useNavigate();
   const [template, setTemplate] = useState<Template | null>(null);
   const [loading, setLoading] = useState(true);
-
+    type ParameterValue = string | number | boolean | string[] | number[];
   useEffect(() => {
     const fetchTemplate = async () => {
       if (!token || !templateId) return;

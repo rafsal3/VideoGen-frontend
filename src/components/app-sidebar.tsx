@@ -28,7 +28,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const menuItems = [
   { label: "Recent Projects", icon: LayoutDashboard, to: "/dashboard" },
   { label: "Explore", icon: Compass, to: "/dashboard/explore" },
-  { label: "Rendering", icon: Rocket, to: "/dashboard/rendering" },
+  { label: "Export", icon: Rocket, to: "/dashboard/export" },
   { label: "My Folder", icon: FolderOpen, to: "/dashboard/folder" },
 ];
 

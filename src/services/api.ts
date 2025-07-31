@@ -28,6 +28,8 @@ export interface AuthResponse {
   token_type: string;
 }
 
+
+
 export interface Template {
   template_id: string;
   name: string;

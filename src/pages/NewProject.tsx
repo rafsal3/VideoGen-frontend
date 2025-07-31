@@ -66,13 +66,14 @@ const NewProject: React.FC = () => {
 
     setCreating(true);
     try {
-      const res = await apiService.createProject(token, {
-        template_id: template.template_id,
-        name: projectName.trim() || `${template.name} Project`,
-        description: description.trim() || '',
-        parameters: formData,
-        render_quality: renderQuality,
-      });
+      await apiService.createProject(token, {
+      template_id: template.template_id,
+      name: projectName.trim() || `${template.name} Project`,
+      description: description.trim() || '',
+      parameters: formData,
+      render_quality: renderQuality,
+    });
+
 
       alert('Project created successfully!');
       navigate('/dashboard'); // or navigate to project detail page

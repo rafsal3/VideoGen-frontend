@@ -1,6 +1,13 @@
-const BASE_URL = 'https://video-backend-nv32.onrender.com/';
-type ParameterValue = string | number | boolean | string[] | number[];
 
+const BASE_URL = 'https://video-backend-nv32.onrender.com/';
+
+
+export interface ParameterValue {
+  type: 'text' | 'url' | 'color';
+  required?: boolean;
+  default?: string;
+  max_length?: number;
+}
 
 export interface RegisterData {
   username: string;

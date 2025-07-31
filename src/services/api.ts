@@ -1,6 +1,10 @@
 const BASE_URL = 'http://localhost:8000';
-type ParameterValue = string | number | boolean | string[] | number[];
-
+export interface ParameterValue {
+  type: 'text' | 'url' | 'color';
+  required?: boolean;
+  default?: string;
+  max_length?: number;
+}
 
 export interface RegisterData {
   username: string;
@@ -26,6 +30,8 @@ export interface AuthResponse {
   access_token: string;
   token_type: string;
 }
+
+
 
 export interface Template {
   template_id: string;

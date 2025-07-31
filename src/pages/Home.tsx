@@ -28,8 +28,9 @@ const Home = () => {
 
       const updated = await apiService.getProjects(token);
       setProjects(updated);
-    } catch (err: any) {
-      alert(err.message);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to render project';
+      alert(message);
     } finally {
       setRenderingIds((prev) => prev.filter((id) => id !== projectId));
     }
@@ -43,10 +44,12 @@ const Home = () => {
     try {
       await apiService.deleteProject(token, projectId);
       setProjects((prev) => prev.filter((p) => p.project_id !== projectId));
-    } catch (err: any) {
-      alert(err.message || 'Failed to delete project');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to delete project';
+      alert(message);
     }
   };
+
 
   return (
     <div className="p-6 max-w-7xl mx-auto">

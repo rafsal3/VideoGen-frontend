@@ -10,6 +10,7 @@ import Account from "./pages/Account";
 import TemplateDetail from "./pages/TemplateDetail";
 import NewProject from "./pages/NewProject";
 import ExportPage from "./pages/ExportPage";
+import LandingPage from "./pages/LandingPage";
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
     <AuthProvider>
       <Routes>
         {/* Public routes */}
+        <Route path="/" element={<LandingPage />} /> {/* 👈 Use landing page here */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -33,18 +35,10 @@ function App() {
           <Route path="explore" element={<Explore />} />
           <Route path="export" element={<ExportPage />} />
           <Route path="account" element={<Account />} />
-
-          {/* 👇 Nested route inside /dashboard/ */}
           <Route path="template/:templateId" element={<TemplateDetail />} />
           <Route path="template/:templateId/use" element={<NewProject />} />
-
-
-          {/* Fallback route inside dashboard */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
-
-        {/* Default redirect from root */}
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
     </AuthProvider>
   );

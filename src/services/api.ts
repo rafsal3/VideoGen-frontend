@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'https://video-gen-v1.vercel.app';
 export interface ParameterValue {
   type: 'text' | 'url' | 'color';
   required?: boolean;

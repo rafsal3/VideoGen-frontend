@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'https://video-backend-nv32.onrender.com/';
 type ParameterValue = string | number | boolean | string[] | number[];
 
 
@@ -20,6 +20,7 @@ export interface User {
   email: string;
   full_name: string;
   created_at: string;
+  avatar: string
 }
 
 export interface AuthResponse {

@@ -1,5 +1,5 @@
 
-const BASE_URL = 'https://video-backend-nv32.onrender.com/';
+const BASE_URL = 'https://video-backend-nv32.onrender.com';
 
 
 export interface ParameterValue {

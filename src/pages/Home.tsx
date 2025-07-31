@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { apiService, Project } from '../services/api';
 import { Pencil, Play, Shredder, Trash2 } from 'lucide-react';
+import ProjectCardSkeleton from '@/components/ProjectCardSkeleton';
 
 const Home = () => {
   const { token } = useAuth();
@@ -52,8 +53,13 @@ const Home = () => {
       <h2 className="text-xl font-semibold mb-4">Recent Projects</h2>
 
       {loading ? (
-        <p>Loading...</p>
-      ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <ProjectCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {projects.map((project) => {
             const isRendering = project.status === 'rendering';

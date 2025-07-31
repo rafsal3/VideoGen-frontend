@@ -4,6 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { Bookmark, Eye } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import TemplateCardSkeleton from '@/components/TemplateCardSkeleton';
+import CategorySkeleton from '@/components/CategorySkeleton';
 
 const staticCategories = ['All'];
 
@@ -119,31 +121,47 @@ const Explore: React.FC = () => {
           onChange={e => setSearch(e.target.value)}
         />
         <div className="flex flex-wrap gap-2 justify-center">
-          {displayCategories.map(cat => (
-            <button
-              key={cat}
-              className={`px-4 py-1 rounded-full border text-sm font-medium transition-colors ${selectedCategory === cat ? 'bg-black text-white' : 'bg-gray-100 text-gray-800'}`}
-              onClick={() => setSelectedCategory(cat)}
-            >
-              {cat}
-            </button>
-          ))}
-          {showSeeAll && (
-            <button
-              key="See All +"
-              className="px-4 py-1 rounded-full border text-sm font-medium transition-colors bg-gray-100 text-gray-800"
-              onClick={() => setShowAllCategories(true)}
-            >
-              See All +
-            </button>
+          {loading ? (
+            <CategorySkeleton />
+          ) : (
+            <>
+              {displayCategories.map(cat => (
+                <button
+                  key={cat}
+                  className={`px-4 py-1 rounded-full border text-sm font-medium transition-colors ${
+                    selectedCategory === cat
+                      ? 'bg-black text-white'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}
+                  onClick={() => setSelectedCategory(cat)}
+                >
+                  {cat}
+                </button>
+              ))}
+              {showSeeAll && (
+                <button
+                  key="See All +"
+                  className="px-4 py-1 rounded-full border text-sm font-medium transition-colors bg-gray-100 text-gray-800"
+                  onClick={() => setShowAllCategories(true)}
+                >
+                  See All +
+                </button>
+              )}
+            </>
           )}
         </div>
+
       </div>
 
       {/* Templates Grid */}
       {loading ? (
-        <div className="text-center text-gray-500">Loading templates...</div>
-      ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <TemplateCardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredTemplates.map((template, idx) => (
             <Link

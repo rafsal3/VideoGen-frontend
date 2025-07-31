@@ -11,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import ExportTableSkeleton from "@/components/ExportTableSkeleton";
 
 const ExportPage = () => {
   const { token } = useAuth();
@@ -34,11 +35,12 @@ const ExportPage = () => {
     fetchProjects();
   }, [token]);
 
-  if (loading) return <div className="p-4">Loading...</div>;
-
-  return (
-    <div className="p-4">
-      <h1 className="text-2xl font-semibold mb-4">Your Exports</h1>
+ return (
+  <div className="p-4">
+    <h1 className="text-2xl font-semibold mb-4">Your Exports</h1>
+    {loading ? (
+      <ExportTableSkeleton />
+    ) : (
       <div className="rounded shadow overflow-auto">
         <table className="min-w-full table-auto text-left">
           <thead>
@@ -137,8 +139,9 @@ const ExportPage = () => {
           </tbody>
         </table>
       </div>
-    </div>
-  );
-};
+    )}
+  </div>
+);
+}
 
 export default ExportPage;

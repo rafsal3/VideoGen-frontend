@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiService, Template } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
-import { Bookmark, Eye } from 'lucide-react';
+import { Bookmark} from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import TemplateCardSkeleton from '@/components/TemplateCardSkeleton';
@@ -165,61 +165,60 @@ const Explore: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredTemplates.map((template, idx) => (
             <Link
-              to={`/dashboard/template/${template.template_id}`}
-              key={template.template_id}
-              className="rounded-2xl p-0 shadow-md flex flex-col relative overflow-hidden hover:shadow-lg transition"
-            >
-              {template.thumbnail_url ? (
-                <div className="h-40 w-full relative flex items-center justify-center overflow-hidden">
-                  <img
-                    src={template.thumbnail_url}
-                    alt={template.name}
-                    className="object-cover w-full h-full"
-                  />
-                  <button
-                    className="absolute top-3 right-3 bg-white/80 rounded-full p-1"
-                    onClick={(e) => toggleSave(e, template)}
-                    title={template.is_saved ? 'Unsave' : 'Save'}
-                    aria-label="Toggle save"
-                  >
-                    <Bookmark
-                      size={20}
-                      className={template.is_saved ? 'fill-black stroke-black' : 'stroke-black'}
+                to={`/dashboard/template/${template.template_id}`}
+                key={template.template_id}
+                className="group rounded-xl overflow-hidden bg-white flex flex-col transition"
+              >
+                {/* Image with subtle hover animation */}
+                <div className="relative overflow-hidden">
+                  {template.thumbnail_url ? (
+                    <img
+                      src={template.thumbnail_url}
+                      alt={template.name}
+                      className="w-full h-auto object-cover aspect-video transition-transform duration-300 group-hover:scale-105"
                     />
-                  </button>
+                  ) : (
+                    <div className={`w-full aspect-video flex items-center justify-center text-2xl font-bold text-white transition-transform duration-300 group-hover:scale-105 ${bgColors[idx % bgColors.length]}`}>
+                      {template.name}
+                    </div>
+                  )}
+
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-4 flex flex-col justify-end">
+                    <div className="flex flex-wrap gap-1 mb-2">
+                      {template.tags?.slice(0, 3).map(tag => (
+                        <span key={tag} className="bg-white/20 text-xs px-2 py-0.5 rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="text-xs text-gray-300">
+                      {template.category} &middot; {template.duration_seconds}s
+                    </div>
+                  </div>
                 </div>
-              ) : (
-                <div className={`h-40 flex items-center justify-center text-3xl font-bold select-none ${bgColors[idx % bgColors.length]} text-white relative`}>
-                  <span>{template.name}</span>
-                  <button
-                    className="absolute top-3 right-3 bg-white/80 rounded-full p-1"
-                    onClick={(e) => toggleSave(e, template)}
-                    title={template.is_saved ? 'Unsave' : 'Save'}
-                    aria-label="Toggle save"
-                  >
-                    <Bookmark
-                      size={20}
-                      className={template.is_saved ? 'fill-black stroke-black' : 'stroke-black'}
-                    />
-                  </button>
+
+                {/* Static bottom section */}
+                <div className="p-4 flex flex-col gap-2">
+                  <div className="flex items-start justify-between">
+                    <h3 className="text-base font-semibold text-gray-900 truncate">{template.name}</h3>
+                    <button
+                      className="bg-gray-100 rounded-full p-1 hover:bg-gray-200"
+                      onClick={(e) => toggleSave(e, template)}
+                      title={template.is_saved ? 'Unsave' : 'Save'}
+                      aria-label="Toggle save"
+                    >
+                      <Bookmark
+                        size={18}
+                        className={template.is_saved ? 'fill-black stroke-black' : 'stroke-black'}
+                      />
+                    </button>
+                  </div>
+                  <p className="text-sm text-gray-600 line-clamp-2">{template.description}</p>
                 </div>
-              )}
-              <div className="p-4 flex-1 flex flex-col">
-                <div className="flex items-center gap-2 mb-1">
-                  <Eye size={16} className="text-gray-500" />
-                  <span className="font-semibold text-gray-900 text-base">{template.name}</span>
-                </div>
-                <div className="text-gray-500 text-sm mb-2">{template.description}</div>
-                <div className="flex flex-wrap gap-1 mb-2">
-                  {template.tags?.map(tag => (
-                    <span key={tag} className="bg-gray-100 text-xs px-2 py-0.5 rounded-full text-gray-700">{tag}</span>
-                  ))}
-                </div>
-                <div className="text-xs text-gray-400 mt-auto">
-                  <span>Category: {template.category}</span> &middot; <span>Duration: {template.duration_seconds}s</span>
-                </div>
-              </div>
-            </Link>
+              </Link>
+
+
           ))}
         </div>
       )}

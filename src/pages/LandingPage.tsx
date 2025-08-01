@@ -4,7 +4,7 @@ import logo from "@/assets/icon-logo.svg"; // Adjust path as needed
 
 const LandingPage: React.FC = () => {
   const barRef = useRef<HTMLDivElement>(null);
-  const progress = useRef(0);
+  const progress = useRef(50);
   const animationFrameId = useRef<number | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -14,7 +14,7 @@ const LandingPage: React.FC = () => {
       if (e.deltaY > 0) {
         progress.current = Math.min(progress.current + e.deltaY * 0.01, 100);
       } else {
-        progress.current = Math.max(progress.current + e.deltaY * 0.01, 10);
+        progress.current = Math.max(progress.current + e.deltaY * 0.01, 50);
       }
     };
 
@@ -44,7 +44,13 @@ const LandingPage: React.FC = () => {
         barRef.current.style.height = `${height}px`;
         barRef.current.style.borderRadius = `${radius}px`;
         barRef.current.style.opacity = `${opacity}`;
-        barRef.current.style.backgroundImage = `linear-gradient(to right, rgb(${r1},${g1},${b1}), rgb(${r2},${g2},${b2}), rgb(${r3},${g3},${b3}))`;
+
+        // Apply the glowing gradient background
+        const gradient = `linear-gradient(to right, rgb(${r1},${g1},${b1}), rgb(${r2},${g2},${b2}), rgb(${r3},${g3},${b3}))`;
+        barRef.current.style.backgroundImage = gradient;
+
+        // Glow effect with box-shadow
+        barRef.current.style.boxShadow = `0 0 20px 8px rgba(${r1},${g1},${b1},0.3), 0 0 40px 16px rgba(${r2},${g2},${b2},0.2), 0 0 60px 24px rgba(${r3},${g3},${b3},0.15)`;
       }
 
       animationFrameId.current = requestAnimationFrame(animate);
@@ -130,8 +136,9 @@ const LandingPage: React.FC = () => {
             opacity: 0.5,
             transition: "height 0.3s ease, border-radius 0.3s ease, opacity 0.3s ease",
           }}
-          className="mt-16 w-[90%] sm:w-full max-w-xs sm:max-w-lg blur-md border border-gray-700 shadow-inner"
+          className="mt-16 w-[90%] sm:w-full max-w-xs sm:max-w-lg blur-md border border-gray-700 shadow-inner animate-[pulseGlow_3s_infinite]"
         />
+
 
         {/* CTA */}
         <p className="text-gray-400 text-xs sm:text-sm mt-8 text-center max-w-xs sm:max-w-md">

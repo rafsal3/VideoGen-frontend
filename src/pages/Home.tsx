@@ -12,20 +12,14 @@ const Home = () => {
 
   useEffect(() => {
     if (!token) return;
-
-    apiService
-      .getProjects(token)
-      .then(setProjects)
-      .finally(() => setLoading(false));
+    apiService.getProjects(token).then(setProjects).finally(() => setLoading(false));
   }, [token]);
 
   const handleRender = async (projectId: string) => {
     if (!token) return;
     try {
       setRenderingIds((prev) => [...prev, projectId]);
-
       await apiService.renderProject(token, projectId);
-
       const updated = await apiService.getProjects(token);
       setProjects(updated);
     } catch (err: unknown) {
@@ -50,19 +44,17 @@ const Home = () => {
     }
   };
 
-
   return (
-    <div className="p-6 max-w-7xl mx-auto">
+    <div className="p-6 max-w-7xl mx-auto text-gray-900 dark:text-white">
       <h2 className="text-xl font-semibold mb-4">Recent Projects</h2>
 
       {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <ProjectCardSkeleton key={i} />
-            ))}
-          </div>
-        ) : (
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <ProjectCardSkeleton key={i} />
+          ))}
+        </div>
+      ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {projects.map((project) => {
             const isRendering = project.status === 'rendering';
@@ -95,7 +87,7 @@ const Home = () => {
                       ? 'bg-red-500 text-white'
                       : isDraft
                       ? 'bg-yellow-500 text-white'
-                      : 'bg-white text-gray-800'
+                      : 'bg-white text-gray-800 dark:bg-gray-200 dark:text-black'
                   }`}
                 >
                   {isRendering ? 'Rendering' : isDraft ? 'Draft' : 'Done'}
@@ -104,28 +96,30 @@ const Home = () => {
                 {/* Hover Action Buttons */}
                 {!isRendering && (
                   <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-4">
-                    <button className="bg-white p-2 rounded-full shadow hover:bg-gray-100">
-                      <Pencil size={18} />
+                    <button className="bg-white dark:bg-gray-800 p-2 rounded-full shadow hover:bg-gray-100 dark:hover:bg-gray-700">
+                      <Pencil size={18} className="text-gray-800 dark:text-gray-100" />
                     </button>
-                    <button className="bg-white p-2 rounded-full shadow hover:bg-gray-100">
-                      <Play size={18} />
+
+                    <button className="bg-white dark:bg-gray-800 p-2 rounded-full shadow hover:bg-gray-100 dark:hover:bg-gray-700">
+                      <Play size={18} className="text-gray-800 dark:text-gray-100" />
                     </button>
+
                     {isDraft && (
                       <button
-                        className="bg-white p-2 rounded-full shadow hover:bg-gray-100"
+                        className="bg-white dark:bg-gray-800 p-2 rounded-full shadow hover:bg-gray-100 dark:hover:bg-gray-700"
                         onClick={() => handleRender(project.project_id)}
                         disabled={isStartingRender}
                       >
                         {isStartingRender ? (
                           <span className="animate-spin w-4 h-4 border-2 border-gray-500 border-t-transparent rounded-full" />
                         ) : (
-                          <Shredder size={18} />
+                          <Shredder size={18} className="text-gray-800 dark:text-gray-100" />
                         )}
                       </button>
                     )}
 
                     <button
-                      className="bg-white p-2 rounded-full shadow hover:bg-gray-100"
+                      className="bg-white dark:bg-gray-800 p-2 rounded-full shadow hover:bg-gray-100 dark:hover:bg-gray-700"
                       onClick={() => handleDelete(project.project_id)}
                     >
                       <Trash2 size={18} className="text-red-500" />

@@ -37,23 +37,23 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-white px-4">
-      <div className="w-full max-w-sm space-y-8">
+    <div className="min-h-screen flex items-center justify-center bg-black px-4 text-white">
+      <div className="w-full max-w-sm backdrop-blur-md bg-white/5 border border-white/10 rounded-xl p-6 shadow-lg">
         <div className="flex flex-col items-center">
-          <img src={mainLogo} alt="Main Logo" className="h-12 mb-4" />
-          <h2 className="text-2xl font-semibold text-black">Sign in</h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <img src={mainLogo} alt="Main Logo" className="h-12 mb-4 invert" />
+          <h2 className="text-2xl font-semibold text-white">Sign in</h2>
+          <p className="text-sm text-gray-400 mt-1">
             or{' '}
             <Link
               to="/register"
-              className="underline text-black hover:text-gray-700"
+              className="underline text-white hover:text-gray-300"
             >
               create a new account
             </Link>
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-6">
           <input
             id="username"
             name="username"
@@ -62,7 +62,7 @@ const Login: React.FC = () => {
             placeholder="Username"
             value={formData.username}
             onChange={handleChange}
-            className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full px-3 py-2 bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded focus:outline-none focus:ring-2 focus:ring-white/40"
           />
           <input
             id="password"
@@ -72,17 +72,17 @@ const Login: React.FC = () => {
             placeholder="Password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full px-3 py-2 bg-white text-black border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full px-3 py-2 bg-white/10 text-white placeholder-gray-400 border border-white/20 rounded focus:outline-none focus:ring-2 focus:ring-white/40"
           />
 
           {error && (
-            <div className="text-sm text-red-600">{error}</div>
+            <div className="text-sm text-red-500">{error}</div>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2 bg-black text-white rounded hover:bg-gray-900 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-2 bg-white text-black rounded hover:bg-gray-200 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>

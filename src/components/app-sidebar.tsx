@@ -1,5 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -37,6 +38,24 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const { token } = useAuth();
 
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    // Initial check
+    setIsDark(document.documentElement.classList.contains("dark"));
+
+    return () => observer.disconnect();
+  }, []);
+
   const { data: savedTemplates = [] } = useQuery({
     queryKey: ["savedTemplates"],
     queryFn: () => {
@@ -62,9 +81,13 @@ export function AppSidebar() {
       <SidebarHeader>
         <div className="flex items-center justify-center w-full px-2">
           <div className="flex items-center gap-2">
-            <img src={iconLogo} alt="Main Logo" className="w-8 h-8" />
+            <img
+              src={iconLogo}
+              alt="Main Logo"
+              className={`w-8 h-8 transition-all ${isDark ? "invert" : ""}`}
+            />
             {state === "expanded" && (
-              <span className="font-bold text-lg tracking-tight text-gray-900">
+              <span className="font-bold text-lg tracking-tight text-gray-900 dark:text-white">
                 AutoVideoGen
               </span>
             )}

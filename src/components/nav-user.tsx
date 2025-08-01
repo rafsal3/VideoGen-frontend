@@ -30,6 +30,7 @@ import {
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 import { PromptUsageCard } from "@/components/PromptUsageCard" // ✅ import the new component
+import DarkModeToggle from "./DarkModeToggle"
 
 export function NavUser({
   user,
@@ -122,6 +123,9 @@ export function NavUser({
             </DropdownMenuGroup>
 
             <DropdownMenuSeparator />
+            <div className=" py-1">
+              <DarkModeToggle />
+            </div>
 
             <DropdownMenuItem onSelect={handleLogout}>
               <IconLogout />

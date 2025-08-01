@@ -4,6 +4,17 @@ import { apiService, Template } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { Bookmark, CheckCircle, XCircle } from 'lucide-react';
 
+
+type ParameterValue = {
+  type: string;
+  required?: boolean;
+  default?: string;
+  max_length?: number;
+};
+
+
+
+
 const TemplateDetail: React.FC = () => {
   const { templateId } = useParams();
   const { token } = useAuth();
@@ -28,7 +39,11 @@ const TemplateDetail: React.FC = () => {
   }, [templateId, token]);
 
   if (loading) {
-    return <div className="text-center text-gray-500 mt-12 text-sm">Loading template...</div>;
+    return (
+      <div className="text-center text-gray-500 dark:text-gray-400 mt-12 text-sm">
+        Loading template...
+      </div>
+    );
   }
 
   if (!template) return null;
@@ -37,7 +52,7 @@ const TemplateDetail: React.FC = () => {
     <div className="max-w-6xl mx-auto px-4 py-10">
       <button
         onClick={() => navigate('/dashboard/explore')}
-        className="text-sm text-gray-500 hover:text-black transition mb-6 flex items-center gap-1"
+        className="text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition mb-6 flex items-center gap-1 cursor-pointer"
       >
         ← Back
       </button>
@@ -58,34 +73,44 @@ const TemplateDetail: React.FC = () => {
 
         {/* Right: Template Info */}
         <div className="w-full lg:w-[40%] space-y-4">
-          <h1 className="text-3xl font-bold text-gray-900">{template.name}</h1>
-          <p className="text-sm text-gray-600">{template.description}</p>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{template.name}</h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">{template.description}</p>
 
           <div className="flex flex-wrap gap-2 text-xs">
-            <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full">Duration: {template.duration_seconds}s</span>
-            <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full">Resolution: {template.resolution}</span>
-            <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full">Category: {template.category}</span>
-            <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full">Engine: {template.render_engine}</span>
-            <span className="bg-gray-100 text-gray-800 px-2 py-0.5 rounded-full">Created: {new Date(template.created_at).toLocaleDateString()}</span>
+            <span className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-2 py-0.5 rounded-full">
+              Duration: {template.duration_seconds}s
+            </span>
+            <span className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-2 py-0.5 rounded-full">
+              Resolution: {template.resolution}
+            </span>
+            <span className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-2 py-0.5 rounded-full">
+              Category: {template.category}
+            </span>
+            <span className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-2 py-0.5 rounded-full">
+              Engine: {template.render_engine}
+            </span>
+            <span className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 px-2 py-0.5 rounded-full">
+              Created: {new Date(template.created_at).toLocaleDateString()}
+            </span>
           </div>
 
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(`/dashboard/template/${template.template_id}/use`)}
-              className="bg-black text-white font-medium px-4 py-2 rounded-full hover:bg-gray-800 transition"
+              className="bg-black dark:bg-white text-white dark:text-black font-medium px-4 py-2 rounded-full hover:bg-gray-800 transition cursor-pointer"
             >
               Use This Template
             </button>
             <div className="flex items-center gap-2">
               <Bookmark
                 size={20}
-                className={template.is_saved ? 'fill-black stroke-black' : 'stroke-black'}
+                className={template.is_saved ? 'fill-black dark:fill-white stroke-black dark:stroke-white' : 'stroke-black dark:stroke-white'}
               />
-              <span className="text-sm text-gray-700">{template.total_saves}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-300">{template.total_saves}</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-gray-700">
+          <div className="flex items-center gap-4 text-sm text-gray-700 dark:text-gray-300">
             <div className="flex items-center gap-1">
               Status:
               {template.is_active ? (
@@ -101,7 +126,7 @@ const TemplateDetail: React.FC = () => {
 
           <div className="flex flex-wrap gap-2 mt-2">
             {template.tags.map(tag => (
-              <span key={tag} className="bg-gray-100 text-gray-800 text-xs px-3 py-1 rounded-full">
+              <span key={tag} className="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 text-xs px-3 py-1 rounded-full">
                 {tag}
               </span>
             ))}
@@ -111,10 +136,10 @@ const TemplateDetail: React.FC = () => {
 
       {/* Parameters Table */}
       <div>
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Parameters</h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Parameters</h3>
         <div className="overflow-x-auto rounded-xl">
           <table className="min-w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-600">
+            <thead className="bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300">
               <tr>
                 <th className="px-4 py-2 font-medium">Name</th>
                 <th className="px-4 py-2 font-medium">Type</th>
@@ -124,16 +149,23 @@ const TemplateDetail: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {Object.entries(template.parameters_schema).map(([key, val]: any, index) => (
-                <tr key={key} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                  <td className="px-4 py-2 font-medium text-gray-900">{key}</td>
-                  <td className="px-4 py-2 capitalize">{val.type}</td>
-                  <td className="px-4 py-2">{val.required ? 'Yes' : 'No'}</td>
-                  <td className="px-4 py-2">
+              {Object.entries(template.parameters_schema).map(([key, val]: [string, ParameterValue], index) => (
+                <tr
+                  key={key}
+                  className={
+                    index % 2 === 0
+                      ? 'bg-white dark:bg-gray-900'
+                      : 'bg-gray-50 dark:bg-gray-800'
+                  }
+                >
+                  <td className="px-4 py-2 font-medium text-gray-900 dark:text-white">{key}</td>
+                  <td className="px-4 py-2 capitalize text-gray-700 dark:text-gray-300">{val.type}</td>
+                  <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{val.required ? 'Yes' : 'No'}</td>
+                  <td className="px-4 py-2 text-gray-700 dark:text-gray-300">
                     {val.type === 'color' && val.default ? (
                       <div className="flex items-center gap-2">
                         <span
-                          className="w-4 h-4 rounded-full border border-gray-300"
+                          className="w-4 h-4 rounded-full border border-gray-300 dark:border-gray-700"
                           style={{ backgroundColor: val.default }}
                         />
                         <span>{val.default}</span>
@@ -142,7 +174,7 @@ const TemplateDetail: React.FC = () => {
                       val.default ?? '-'
                     )}
                   </td>
-                  <td className="px-4 py-2">{val.max_length ?? '-'}</td>
+                  <td className="px-4 py-2 text-gray-700 dark:text-gray-300">{val.max_length ?? '-'}</td>
                 </tr>
               ))}
             </tbody>
